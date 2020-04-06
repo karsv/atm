@@ -10,14 +10,13 @@ import java.util.Map;
 public interface AtmService {
     Atm addAtm(Atm atm);
 
-    Atm updateAtm(AtmRequestDto atm, Map<Cash, Long> cash);
+    Atm getAtmById(Long id);
 
-    Map<Cash, Long> checkCashInAtm(AtmRequestDto atm);
+    Atm putCashToAtm(AtmRequestDto atm, Map<Cash, Long> cash);
+
+    Map<Cash, Long> getCashFromAtm(AtmRequestDto atm);
 
     Atm withdrawMoney(AtmRequestDto atm, BigDecimal money, AccountRequestDto account);
 
     Atm depositMoney(AtmRequestDto atm, Map<Cash, Long> money, AccountRequestDto account);
-
-    void transferMoney(BigDecimal money,
-                       AccountRequestDto ownAccount, AccountRequestDto destinationAccount);
 }

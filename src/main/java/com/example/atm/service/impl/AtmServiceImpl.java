@@ -6,7 +6,6 @@ import com.example.atm.exception.AtmException;
 import com.example.atm.model.Account;
 import com.example.atm.model.Atm;
 import com.example.atm.model.Cash;
-import com.example.atm.repository.AccountRepository;
 import com.example.atm.repository.AtmRepository;
 import com.example.atm.service.AccountService;
 import com.example.atm.service.AtmService;
@@ -17,13 +16,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class AtmServiceImpl implements AtmService {
     private final AtmRepository atmRepository;
-    private final AccountRepository accountRepository;
     private final AccountService accountService;
 
-    public AtmServiceImpl(AtmRepository atmRepository, AccountRepository accountRepository,
+    public AtmServiceImpl(AtmRepository atmRepository,
                           AccountService accountService) {
         this.atmRepository = atmRepository;
-        this.accountRepository = accountRepository;
         this.accountService = accountService;
     }
 
@@ -33,25 +30,37 @@ public class AtmServiceImpl implements AtmService {
     }
 
     @Override
-    public Atm updateAtm(AtmRequestDto atm, Map<Cash, Long> cash) {
-        Atm atmTemp = atmRepository.getOne(atm.getId());
+    public Atm getAtmById(Long id) {
+        if (atmRepository.findById(id).isEmpty()) {
+            throw new AtmException("No such ATM!");
+        }
+        return atmRepository.findById(id).get();
+    }
+
+    @Override
+    public Atm putCashToAtm(AtmRequestDto atm, Map<Cash, Long> cash) {
+        Atm atmTemp = getAtmById(atm.getId());
+
         Map<Cash, Long> temp = atmTemp.getCash();
-        temp.put(Cash.NOTE100, temp.get(Cash.NOTE100) + cash.get(Cash.NOTE100));
-        temp.put(Cash.NOTE200, temp.get(Cash.NOTE200) + cash.get(Cash.NOTE200));
-        temp.put(Cash.NOTE500, temp.get(Cash.NOTE500) + cash.get(Cash.NOTE500));
+        for (Map.Entry<Cash, Long> entry : cash.entrySet()) {
+            if (temp.containsKey(entry.getKey())) {
+                temp.put(entry.getKey(), (temp.get(entry.getKey()) + cash.get(entry.getKey())));
+            }
+        }
         atmTemp.setCash(temp);
         return atmRepository.save(atmTemp);
     }
 
     @Override
-    public Map<Cash, Long> checkCashInAtm(AtmRequestDto atm) {
-        return atmRepository.getOne(atm.getId()).getCash();
+    public Map<Cash, Long> getCashFromAtm(AtmRequestDto atm) {
+        return getAtmById(atm.getId()).getCash();
     }
 
     @Override
     public Atm withdrawMoney(AtmRequestDto atm, BigDecimal money, AccountRequestDto account) {
-        if (!checkIfWithdrawIsCorrect(money)) {
-            throw new AtmException("the amount should be a multiple of 100");
+        Atm atmTemp = getAtmById(atm.getId());
+        if (!checkIfWithdrawIsCorrect(money, atmTemp)) {
+            throw new AtmException("the amount should be divider by " + getCashDivider(atmTemp, money));
         }
 
         Account userAccount = accountService.getAccount(account);
@@ -59,49 +68,56 @@ public class AtmServiceImpl implements AtmService {
             throw new AtmException("The isn't enough money on the account!");
         }
 
-        BigDecimal cahInAtm = getSumOfCash(checkCashInAtm(atm));
-        if (!checkIfEnoughCashInAtm(money, cahInAtm)) {
+        BigDecimal cashInAtm = getSumOfCash(getCashFromAtm(atm));
+        if (!checkIfEnoughCashInAtm(money, cashInAtm)) {
             throw new AtmException("Not enough money at the ATM!");
         }
 
         accountService.getMoneyFromAccount(account, money);
 
-        Atm tempAtm = atmRepository.getOne(atm.getId());
-        Map<Cash, Long> cashAtmTemp = tempAtm.getCash();
+        return atmRepository.save(getNotesFromAtm(atmTemp, money));
+    }
 
-        Long n500 = cashAtmTemp.get(Cash.NOTE500);
-        Long n200 = cashAtmTemp.get(Cash.NOTE200);
-        Long n100 = cashAtmTemp.get(Cash.NOTE100);
-
+    private Atm getNotesFromAtm(Atm atm, BigDecimal money) {
+        Map<Cash, Long> cashAtmTemp = atm.getCash();
         Long exchange = money.longValue();
 
-        while (exchange != 0) {
-            if (exchange > 500 && n500 > 0) {
-                exchange -= 500;
-                n500--;
-            } else if (exchange > 200 && n200 > 0) {
-                exchange -= 200;
-                n200--;
-            } else {
-                exchange -= 100;
-                n100--;
+        for (Map.Entry<Cash, Long> entry : cashAtmTemp.entrySet()) {
+            int nominal = Integer.valueOf(entry.getKey().toString().substring(4));
+            long numberOfNotes = entry.getValue();
+            while (numberOfNotes > 0 && exchange >= nominal) {
+                exchange -= nominal;
+                numberOfNotes--;
             }
+            entry.setValue(numberOfNotes);
         }
-
-        cashAtmTemp.put(Cash.NOTE500, n500);
-        cashAtmTemp.put(Cash.NOTE200, n200);
-        cashAtmTemp.put(Cash.NOTE100, n100);
-        tempAtm.setCash(cashAtmTemp);
-
-        return atmRepository.save(tempAtm);
+        atm.setCash(cashAtmTemp);
+        return atm;
     }
 
     private boolean checkIfEnoughCashInAtm(BigDecimal money, BigDecimal cash) {
         return money.compareTo(cash) <= 0;
     }
 
-    private boolean checkIfWithdrawIsCorrect(BigDecimal money) {
-        return money.longValue() % 100 <= 0;
+    private boolean checkIfWithdrawIsCorrect(BigDecimal money, Atm atm) {
+        return money.longValue() % getCashDivider(atm, money) <= 0;
+    }
+
+    private int getCashDivider(Atm atm, BigDecimal money) {
+        int divider = 0;
+        if (atm.getCash().get(Cash.NOTE100) > 0
+                || (money.longValue() >= 700
+                && atm.getCash().get(Cash.NOTE500) > 0
+                && atm.getCash().get(Cash.NOTE200) > 0)) {
+            divider = 100;
+        } else if (atm.getCash().get(Cash.NOTE200) > 0
+                || (money.longValue() % 1000 == 0
+                && atm.getCash().get(Cash.NOTE500) % 2 == 0)) {
+            divider = 200;
+        } else if (atm.getCash().get(Cash.NOTE500) > 0) {
+            divider = 500;
+        }
+        return divider;
     }
 
     private boolean checkIfEnoughMoneyOnAccount(Account account, BigDecimal money) {
@@ -118,7 +134,7 @@ public class AtmServiceImpl implements AtmService {
 
     @Override
     public Atm depositMoney(AtmRequestDto atm, Map<Cash, Long> money, AccountRequestDto account) {
-        Atm atmTemp = atmRepository.getOne(atm.getId());
+        Atm atmTemp = getAtmById(atm.getId());
         Map<Cash, Long> newAtmCash = atmTemp.getCash();
         for (Map.Entry<Cash, Long> entry : money.entrySet()) {
             if (newAtmCash.containsKey(entry.getKey())) {
@@ -127,28 +143,7 @@ public class AtmServiceImpl implements AtmService {
             }
         }
         atmTemp.setCash(newAtmCash);
-
         accountService.putMoneyOnAccount(account, getSumOfCash(money));
-
         return atmRepository.save(atmTemp);
-    }
-
-    @Override
-    public void transferMoney(BigDecimal money,
-                              AccountRequestDto ownerAccountDto,
-                              AccountRequestDto destinationAccountDto) {
-        Account ownerAccount = accountService.getAccount(ownerAccountDto);
-        Account destinationAccount = accountService.getAccount(destinationAccountDto);
-
-        checkIfEnoughMoneyOnAccount(ownerAccount, money);
-
-        try {
-            accountService.getMoneyFromAccount(ownerAccountDto, money);
-            accountService.putMoneyOnAccount(destinationAccountDto, money);
-        } catch (Exception e) {
-            accountService.addAccount(ownerAccount);
-            accountService.addAccount(destinationAccount);
-            throw new AtmException("Can't transfer money!", e);
-        }
     }
 }

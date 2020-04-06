@@ -12,4 +12,7 @@ public interface AccountService {
     Account putMoneyOnAccount(AccountRequestDto accountRequestDto, BigDecimal money);
 
     Account getMoneyFromAccount(AccountRequestDto accountRequestDto, BigDecimal money);
+
+    Account transferMoney(BigDecimal money,
+                          AccountRequestDto ownerAccountDto, AccountRequestDto destinationAccountDto);
 }

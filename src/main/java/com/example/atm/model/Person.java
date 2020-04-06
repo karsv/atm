@@ -3,6 +3,8 @@ package com.example.atm.model;
 import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -20,6 +22,7 @@ public class Person {
     private Long id;
     private String name;
     private String password;
+    @Enumerated(EnumType.STRING)
     private Role role;
     @OneToMany(fetch = FetchType.EAGER)
     private Set<Account> accounts = new HashSet<>();
