@@ -44,7 +44,8 @@ public class AtmController {
     }
 
     @PostMapping("/withdraw-money")
-    public String withdrawMoney(@RequestBody WithdrawMoneyRequestDto withdrawMoneyrequestDto, Principal principal) {
+    public String withdrawMoney(@RequestBody WithdrawMoneyRequestDto withdrawMoneyrequestDto,
+                                Principal principal) {
         Person person = personService.getByName(principal.getName());
         if (checkAccountsOwner(person, withdrawMoneyrequestDto.getAccount())) {
             try {
@@ -63,7 +64,8 @@ public class AtmController {
     public String depositMoney(@RequestBody DepositMoneyRequestDto depositMoneyRequestDto) {
         try {
             return atmService.depositMoney(depositMoneyRequestDto.getAtm(),
-                    depositMoneyRequestDto.getMoney(), depositMoneyRequestDto.getAccount()).toString();
+                    depositMoneyRequestDto.getMoney(),
+                    depositMoneyRequestDto.getAccount()).toString();
         } catch (RuntimeException e) {
             logger.error("Error in AtmController -> deposit money" + e);
             return e.getMessage();

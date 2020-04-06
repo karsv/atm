@@ -19,7 +19,8 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
     private static final Logger logger = LogManager.getLogger(WebSecurity.class);
     private final UserDetailsService userDetailsService;
 
-    public WebSecurity(@Qualifier("customUserDetailService") UserDetailsService userDetailsService) {
+    public WebSecurity(@Qualifier("customUserDetailService")
+                               UserDetailsService userDetailsService) {
         this.userDetailsService = userDetailsService;
     }
 

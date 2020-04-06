@@ -60,7 +60,8 @@ public class AtmServiceImpl implements AtmService {
     public Atm withdrawMoney(AtmRequestDto atm, BigDecimal money, AccountRequestDto account) {
         Atm atmTemp = getAtmById(atm.getId());
         if (!checkIfWithdrawIsCorrect(money, atmTemp)) {
-            throw new AtmException("the amount should be divider by " + getCashDivider(atmTemp, money));
+            throw new AtmException("the amount should be divider by "
+                    + getCashDivider(atmTemp, money));
         }
 
         Account userAccount = accountService.getAccount(account);

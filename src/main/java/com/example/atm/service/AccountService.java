@@ -14,5 +14,6 @@ public interface AccountService {
     Account getMoneyFromAccount(AccountRequestDto accountRequestDto, BigDecimal money);
 
     Account transferMoney(BigDecimal money,
-                          AccountRequestDto ownerAccountDto, AccountRequestDto destinationAccountDto);
+                          AccountRequestDto ownerAccountDto,
+                          AccountRequestDto destinationAccountDto);
 }

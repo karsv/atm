@@ -52,7 +52,8 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Account transferMoney(BigDecimal money, AccountRequestDto ownerAccountDto, AccountRequestDto destinationAccountDto) {
+    public Account transferMoney(BigDecimal money, AccountRequestDto ownerAccountDto,
+                                 AccountRequestDto destinationAccountDto) {
         Account ownerAccount = getAccount(ownerAccountDto);
         Account destinationAccount = getAccount(destinationAccountDto);
 

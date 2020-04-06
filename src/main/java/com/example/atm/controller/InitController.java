@@ -54,7 +54,6 @@ public class InitController {
         person.setRole(Role.USER);
         personService.addPerson(person);
 
-
         Atm atm = new Atm();
         atmService.addAtm(atm);
         Map<Cash, Long> cash = new HashMap<>();
