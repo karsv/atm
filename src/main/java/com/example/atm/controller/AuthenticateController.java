@@ -19,9 +19,4 @@ public class AuthenticateController {
     public Person register(@RequestBody PersonAuthenticateRequestDto person) {
         return authenticateService.register(person.name, person.password);
     }
-
-    @PostMapping("/login")
-    public Person login(@RequestBody PersonAuthenticateRequestDto person) {
-        return authenticateService.authenticate(person.name, person.password);
-    }
 }

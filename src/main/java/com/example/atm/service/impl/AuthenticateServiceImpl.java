@@ -1,6 +1,5 @@
 package com.example.atm.service.impl;
 
-import com.example.atm.exception.AuthenticateException;
 import com.example.atm.model.Person;
 import com.example.atm.model.Role;
 import com.example.atm.service.AuthenticateService;
@@ -25,14 +24,5 @@ public class AuthenticateServiceImpl implements AuthenticateService {
         person.setPassword(passwordEncoder.encode(password));
         person.setRole(Role.USER);
         return personService.addPerson(person);
-    }
-
-    @Override
-    public Person authenticate(String name, String password) {
-        Person person = personService.getByName(name);
-        if (person == null || !person.getPassword().equals(passwordEncoder.encode(password))) {
-            throw new AuthenticateException("Wrong parameters!");
-        }
-        return person;
     }
 }

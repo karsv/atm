@@ -79,6 +79,21 @@ public class AtmServiceImpl implements AtmService {
         return atmRepository.save(getNotesFromAtm(atmTemp, money));
     }
 
+    @Override
+    public Atm depositMoney(AtmRequestDto atm, Map<Cash, Long> money, AccountRequestDto account) {
+        Atm atmTemp = getAtmById(atm.getId());
+        Map<Cash, Long> newAtmCash = atmTemp.getCash();
+        for (Map.Entry<Cash, Long> entry : money.entrySet()) {
+            if (newAtmCash.containsKey(entry.getKey())) {
+                Long sumOfNoteInAtm = entry.getValue() + newAtmCash.get(entry.getKey());
+                newAtmCash.put(entry.getKey(), sumOfNoteInAtm);
+            }
+        }
+        atmTemp.setCash(newAtmCash);
+        accountService.putMoneyOnAccount(account, getSumOfCash(money));
+        return atmRepository.save(atmTemp);
+    }
+
     private Atm getNotesFromAtm(Atm atm, BigDecimal money) {
         Map<Cash, Long> cashAtmTemp = atm.getCash();
         Long exchange = money.longValue();
@@ -125,26 +140,11 @@ public class AtmServiceImpl implements AtmService {
         return money.compareTo(account.getMoneySum()) <= 0;
     }
 
-    private BigDecimal getSumOfCash(Map<Cash, Long> cash) {
+    protected BigDecimal getSumOfCash(Map<Cash, Long> cash) {
         Long sum = 0L;
         for (Map.Entry<Cash, Long> entry : cash.entrySet()) {
             sum += (Integer.valueOf(entry.getKey().toString().substring(4)) * entry.getValue());
         }
         return BigDecimal.valueOf(sum);
-    }
-
-    @Override
-    public Atm depositMoney(AtmRequestDto atm, Map<Cash, Long> money, AccountRequestDto account) {
-        Atm atmTemp = getAtmById(atm.getId());
-        Map<Cash, Long> newAtmCash = atmTemp.getCash();
-        for (Map.Entry<Cash, Long> entry : money.entrySet()) {
-            if (newAtmCash.containsKey(entry.getKey())) {
-                Long sumOfNoteInAtm = entry.getValue() + newAtmCash.get(entry.getKey());
-                newAtmCash.put(entry.getKey(), sumOfNoteInAtm);
-            }
-        }
-        atmTemp.setCash(newAtmCash);
-        accountService.putMoneyOnAccount(account, getSumOfCash(money));
-        return atmRepository.save(atmTemp);
     }
 }
