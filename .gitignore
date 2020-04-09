@@ -29,3 +29,5 @@ build/
 
 ### VS Code ###
 .vscode/
+/.mvn/wrapper/maven-wrapper.jar
+/src/main/java/com/example/atm/test/Test.java
