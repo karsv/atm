@@ -26,7 +26,8 @@ class AuthenticateServiceImplTest {
     private Person personWithoutId;
     private Person personWithId;
 
-    {
+    @BeforeEach
+    private void init() {
         personWithoutId = new Person();
         personWithoutId.setName("user");
         personWithoutId.setRole(Role.USER);
@@ -35,10 +36,6 @@ class AuthenticateServiceImplTest {
         personWithId.setName("user");
         personWithId.setRole(Role.USER);
         personWithId.setId(1L);
-    }
-
-    @BeforeEach
-    private void init() {
         when(personService.addPerson(personWithoutId)).thenReturn(personWithId);
         when(passwordEncoder.encode("123")).thenReturn("secret");
     }

@@ -6,6 +6,7 @@ import com.example.atm.model.Account;
 import com.example.atm.repository.AccountRepository;
 import java.math.BigDecimal;
 import java.util.Optional;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -38,7 +39,8 @@ class AccountServiceImplTest {
     private BigDecimal operatedMoneyOnAccount;
     private BigDecimal overDraftMoney;
 
-    {
+    @BeforeEach
+    public void init() {
         oldSum = BigDecimal.valueOf(100);
         newSumWithAddedMoney = BigDecimal.valueOf(120);
         newSumWithGettedMoney = BigDecimal.valueOf(80);
@@ -66,10 +68,7 @@ class AccountServiceImplTest {
         fakeAccountRequestDto.setId(2L);
         destinationAccountRequestDto = new AccountRequestDto();
         destinationAccountRequestDto.setId(3L);
-    }
 
-    @BeforeEach
-    public void init() {
         when(accountRepository.save(accountWithoutId)).thenReturn(account);
         when(accountRepository.save(accountWithAddedMoney)).thenReturn(accountWithAddedMoney);
         when(accountRepository.save(accountWithGettedMoney)).thenReturn(accountWithGettedMoney);

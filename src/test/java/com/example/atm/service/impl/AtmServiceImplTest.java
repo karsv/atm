@@ -49,8 +49,8 @@ class AtmServiceImplTest {
     private Map<Cash, Long> putedCash;
     private Map<Cash, Long> newCash;
 
-
-    {
+    @BeforeEach
+    private void init() {
         newCash = new LinkedHashMap<>();
         newCash.put(Cash.NOTE500, 12L);
         newCash.put(Cash.NOTE200, 12L);
@@ -92,10 +92,6 @@ class AtmServiceImplTest {
 
         fakeAtmRequestDto = new AtmRequestDto();
         fakeAtmRequestDto.setId(2L);
-    }
-
-    @BeforeEach
-    private void init() {
         when(atmRepository.save(atmWithoutId)).thenReturn(atmWithId);
         when(atmRepository.findById(1L)).thenReturn(Optional.of(atmWithId));
         when(atmRepository.findById(2L)).thenReturn(Optional.empty());
