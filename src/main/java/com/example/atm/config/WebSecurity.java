@@ -2,6 +2,7 @@ package com.example.atm.config;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,6 +25,7 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
         this.userDetailsService = userDetailsService;
     }
 
+    @Autowired
     public void configureGlobal(AuthenticationManagerBuilder builder) {
         try {
             builder.userDetailsService(userDetailsService).passwordEncoder(getEncoder());

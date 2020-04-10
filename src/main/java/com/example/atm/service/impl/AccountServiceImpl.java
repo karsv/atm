@@ -7,7 +7,6 @@ import com.example.atm.model.Account;
 import com.example.atm.repository.AccountRepository;
 import com.example.atm.service.AccountService;
 import java.math.BigDecimal;
-import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -41,11 +40,8 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public Account getMoneyFromAccount(AccountRequestDto accountRequestDto, BigDecimal money) {
-        Optional<Account> temp = accountRepository.findById(accountRequestDto.getId());
-        if (temp.isEmpty()) {
-            throw new AccountException("There isn't such account!");
-        }
-        Account account = temp.get();
+
+        Account account = getAccount(accountRequestDto);
         checkMoneyOnAccount(account, money);
         account.setMoneySum(account.getMoneySum().subtract(money));
         return accountRepository.save(account);
@@ -60,14 +56,16 @@ public class AccountServiceImpl implements AccountService {
         checkMoneyOnAccount(ownerAccount, money);
 
         try {
-            getMoneyFromAccount(ownerAccountDto, money);
+            ownerAccount = getMoneyFromAccount(ownerAccountDto, money);
+
             putMoneyOnAccount(destinationAccountDto, money);
         } catch (Exception e) {
             addAccount(ownerAccount);
             addAccount(destinationAccount);
             throw new AtmException("Can't transfer money!", e);
         }
-        return accountRepository.findById(ownerAccount.getId()).get();
+
+        return ownerAccount;
     }
 
     private boolean checkMoneyOnAccount(Account account, BigDecimal money) {

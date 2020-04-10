@@ -31,7 +31,11 @@ public class PersonServiceImpl implements PersonService {
 
     @Override
     public Person getByName(String name) {
-        return personRepository.findByName(name);
+        Optional<Person> person = personRepository.findByName(name);
+        if (person.isEmpty()) {
+            throw new PersonException("No person with such name");
+        }
+        return person.get();
     }
 
     @Override
