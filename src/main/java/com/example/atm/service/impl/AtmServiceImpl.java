@@ -141,7 +141,6 @@ public class AtmServiceImpl implements AtmService {
     }
 
     protected BigDecimal getSumOfCash(Map<Cash, Long> cash) {
-
         Long sum = 0L;
         for (Map.Entry<Cash, Long> entry : cash.entrySet()) {
             sum += (Integer.valueOf(entry.getKey().toString().substring(4)) * entry.getValue());

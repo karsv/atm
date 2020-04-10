@@ -38,7 +38,8 @@ class AccountServiceImplTest {
     private BigDecimal operatedMoneyOnAccount;
     private BigDecimal overDraftMoney;
 
-    {
+    @BeforeEach
+    public void init() {
         oldSum = BigDecimal.valueOf(100);
         newSumWithAddedMoney = BigDecimal.valueOf(120);
         newSumWithGettedMoney = BigDecimal.valueOf(80);
@@ -66,10 +67,6 @@ class AccountServiceImplTest {
         fakeAccountRequestDto.setId(2L);
         destinationAccountRequestDto = new AccountRequestDto();
         destinationAccountRequestDto.setId(3L);
-    }
-
-    @BeforeEach
-    public void init() {
         when(accountRepository.save(accountWithoutId)).thenReturn(account);
         when(accountRepository.save(accountWithAddedMoney)).thenReturn(accountWithAddedMoney);
         when(accountRepository.save(accountWithGettedMoney)).thenReturn(accountWithGettedMoney);
@@ -126,3 +123,4 @@ class AccountServiceImplTest {
                         transferMoney(overDraftMoney, realAccountRequestDto, destinationAccountRequestDto));
     }
 }
+

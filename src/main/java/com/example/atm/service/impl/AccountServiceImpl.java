@@ -40,7 +40,6 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public Account getMoneyFromAccount(AccountRequestDto accountRequestDto, BigDecimal money) {
-
         Account account = getAccount(accountRequestDto);
         checkMoneyOnAccount(account, money);
         account.setMoneySum(account.getMoneySum().subtract(money));
@@ -57,14 +56,12 @@ public class AccountServiceImpl implements AccountService {
 
         try {
             ownerAccount = getMoneyFromAccount(ownerAccountDto, money);
-
             putMoneyOnAccount(destinationAccountDto, money);
         } catch (Exception e) {
             addAccount(ownerAccount);
             addAccount(destinationAccount);
             throw new AtmException("Can't transfer money!", e);
         }
-
         return ownerAccount;
     }
 

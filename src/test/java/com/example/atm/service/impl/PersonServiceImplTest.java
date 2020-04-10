@@ -36,7 +36,8 @@ class PersonServiceImplTest {
 
     private Account newAccount;
 
-    {
+    @BeforeEach
+    private void init() {
         personWithoutId = new Person();
         personWithoutId.setName("personWithoutId");
         personWithoutId.setPassword("123");
@@ -60,10 +61,6 @@ class PersonServiceImplTest {
         newAccount.setId(1L);
         newAccount.setMoneySum(BigDecimal.valueOf(100));
         personWithAccount.addAccount(newAccount);
-    }
-
-    @BeforeEach
-    private void init() {
         when(personRepository.save(personWithoutId)).thenReturn(personWithId);
         when(personRepository.save(personWithAccount)).thenReturn(personWithAccount);
         when(personRepository.save(personWithId)).thenReturn(personWithId);
