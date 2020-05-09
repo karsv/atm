@@ -10,6 +10,7 @@ import com.example.atm.service.AccountService;
 import com.example.atm.service.AtmService;
 import com.example.atm.service.PersonService;
 import java.security.Principal;
+import java.util.stream.Collectors;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -90,6 +91,11 @@ public class AtmController {
     }
 
     private boolean checkAccountsOwner(Person person, AccountRequestDto accountRequestDto) {
-        return person.getAccounts().contains(accountService.getAccount(accountRequestDto));
+        return person.getAccounts().stream()
+                .map(x -> x.getCardNumber())
+                .collect(Collectors.toSet())
+                .contains(accountService
+                        .getAccount(accountRequestDto)
+                        .getCardNumber());
     }
 }

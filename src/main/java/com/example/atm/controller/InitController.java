@@ -9,6 +9,7 @@ import com.example.atm.model.Role;
 import com.example.atm.service.AccountService;
 import com.example.atm.service.AtmService;
 import com.example.atm.service.PersonService;
+import com.example.atm.util.CardNumberGenerator;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,23 +23,28 @@ public class InitController {
     private final AtmService atmService;
     private final PasswordEncoder passwordEncoder;
     private final PersonService personService;
+    private final CardNumberGenerator cardNumberGenerator;
 
     public InitController(AccountService accountService, AtmService atmService,
-                          PasswordEncoder passwordEncoder, PersonService personService) {
+                          PasswordEncoder passwordEncoder, PersonService personService,
+                          CardNumberGenerator cardNumberGenerator) {
         this.accountService = accountService;
         this.atmService = atmService;
         this.passwordEncoder = passwordEncoder;
         this.personService = personService;
+        this.cardNumberGenerator = cardNumberGenerator;
     }
 
     @PostConstruct
     private void firstInit() {
         Account account1 = new Account();
         account1.setMoneySum(BigDecimal.valueOf(1000000.11));
+        account1.setCardNumber(cardNumberGenerator.randomCardGenerate());
         accountService.addAccount(account1);
 
         Account account2 = new Account();
         account2.setMoneySum(BigDecimal.valueOf(0));
+        account2.setCardNumber(cardNumberGenerator.randomCardGenerate());
         accountService.addAccount(account2);
 
         Person admin = new Person();
