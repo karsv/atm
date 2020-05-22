@@ -10,6 +10,7 @@ import com.example.atm.repository.AtmRepository;
 import com.example.atm.service.AccountService;
 import com.example.atm.service.AtmService;
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Map;
 import org.springframework.stereotype.Service;
 
@@ -25,12 +26,12 @@ public class AtmServiceImpl implements AtmService {
     }
 
     @Override
-    public Atm addAtm(Atm atm) {
+    public Atm add(Atm atm) {
         return atmRepository.save(atm);
     }
 
     @Override
-    public Atm getAtmById(Long id) {
+    public Atm get(Long id) {
         if (atmRepository.findById(id).isEmpty()) {
             throw new AtmException("No such ATM!");
         }
@@ -38,8 +39,13 @@ public class AtmServiceImpl implements AtmService {
     }
 
     @Override
-    public Atm putCashToAtm(AtmRequestDto atm, Map<Cash, Long> cash) {
-        Atm atmTemp = getAtmById(atm.getId());
+    public List<Atm> getAll() {
+        return atmRepository.findAll();
+    }
+
+    @Override
+    public Atm putCash(AtmRequestDto atm, Map<Cash, Long> cash) {
+        Atm atmTemp = get(atm.getId());
 
         Map<Cash, Long> temp = atmTemp.getCash();
         for (Map.Entry<Cash, Long> entry : cash.entrySet()) {
@@ -52,13 +58,13 @@ public class AtmServiceImpl implements AtmService {
     }
 
     @Override
-    public Map<Cash, Long> getCashFromAtm(AtmRequestDto atm) {
-        return getAtmById(atm.getId()).getCash();
+    public Map<Cash, Long> cashWithdrwal(AtmRequestDto atm) {
+        return get(atm.getId()).getCash();
     }
 
     @Override
     public Atm withdrawMoney(AtmRequestDto atm, BigDecimal money, AccountRequestDto account) {
-        Atm atmTemp = getAtmById(atm.getId());
+        Atm atmTemp = get(atm.getId());
         if (!checkIfWithdrawIsCorrect(money, atmTemp)) {
             throw new AtmException("the amount should be divider by "
                     + getCashDivider(atmTemp, money));
@@ -69,7 +75,7 @@ public class AtmServiceImpl implements AtmService {
             throw new AtmException("The isn't enough money on the account!");
         }
 
-        BigDecimal cashInAtm = getSumOfCash(getCashFromAtm(atm));
+        BigDecimal cashInAtm = getSumOfCash(cashWithdrwal(atm));
         if (!checkIfEnoughCashInAtm(money, cashInAtm)) {
             throw new AtmException("Not enough money at the ATM!");
         }
@@ -81,7 +87,7 @@ public class AtmServiceImpl implements AtmService {
 
     @Override
     public Atm depositMoney(AtmRequestDto atm, Map<Cash, Long> money, AccountRequestDto account) {
-        Atm atmTemp = getAtmById(atm.getId());
+        Atm atmTemp = get(atm.getId());
         Map<Cash, Long> newAtmCash = atmTemp.getCash();
         for (Map.Entry<Cash, Long> entry : money.entrySet()) {
             if (newAtmCash.containsKey(entry.getKey())) {

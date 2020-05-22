@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 public class WithdrawMoneyRequestDto {
-    private AtmRequestDto atm;
+    private Long atmId;
     private BigDecimal money;
-    private AccountRequestDto account;
+    private Long accountId;
 }

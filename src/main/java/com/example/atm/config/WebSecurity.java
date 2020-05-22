@@ -41,15 +41,16 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
                 .disable()
                 .authorizeRequests()
                 .antMatchers("/h2-console/**", "/register", "/login").permitAll()
-                .antMatchers("/atm/push-cash-to-atm").hasRole("ADMIN")
+                .antMatchers("/atm/push-cash-to-atm", "/atm/get-atms").hasRole("ADMIN")
                 .antMatchers("/atm/withdraw-money",
                         "/atm/deposit-money",
                         "/atm/transfer-money").hasRole("USER")
                 .anyRequest().authenticated()
-                .and().formLogin().permitAll()
                 .and().httpBasic();
 
         http.headers().frameOptions().disable();
+
+        http.cors();
     }
 
     @Bean

@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 public class TransferMoneyRequestDto {
+    private Long ownerAccountId;
     private BigDecimal money;
-    private AccountRequestDto ownerAccount;
-    private AccountRequestDto destinationAccount;
+    private Long destinationAccountId;
 }

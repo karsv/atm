@@ -102,25 +102,25 @@ class AtmServiceImplTest {
 
     @Test
     void addAtm() {
-        assertEquals(atmWithId, atmService.addAtm(atmWithoutId));
+        assertEquals(atmWithId, atmService.add(atmWithoutId));
     }
 
     @Test
     void getAtmById() {
-        assertEquals(atmWithId, atmService.getAtmById(1L));
-        assertThrows(AtmException.class, () -> atmService.getAtmById(2L));
+        assertEquals(atmWithId, atmService.get(1L));
+        assertThrows(AtmException.class, () -> atmService.get(2L));
     }
 
     @Test
     void putCashToAtm() {
-        assertEquals(atmWithPutedCash, atmService.putCashToAtm(realAtmRequestDto, putedCash));
-        assertThrows(AtmException.class, () -> atmService.putCashToAtm(fakeAtmRequestDto, putedCash));
+        assertEquals(atmWithPutedCash, atmService.putCash(realAtmRequestDto, putedCash));
+        assertThrows(AtmException.class, () -> atmService.putCash(fakeAtmRequestDto, putedCash));
     }
 
     @Test
     void getCashFromAtm() {
-        assertEquals(cash, atmService.getCashFromAtm(realAtmRequestDto));
-        assertThrows(AtmException.class, () -> atmService.getCashFromAtm(fakeAtmRequestDto));
+        assertEquals(cash, atmService.cashWithdrwal(realAtmRequestDto));
+        assertThrows(AtmException.class, () -> atmService.cashWithdrwal(fakeAtmRequestDto));
     }
 
     @Test

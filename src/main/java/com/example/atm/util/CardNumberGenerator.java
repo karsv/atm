@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class CardNumberGenerator {
     private static final Integer CARD_LENGTH = 16;
-    private Random random = new Random();
+    private final Random random = new Random();
 
     public String randomCardGenerate() {
         StringBuilder builder = new StringBuilder();

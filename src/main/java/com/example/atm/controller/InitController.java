@@ -57,17 +57,28 @@ public class InitController {
         person.setName("user");
         person.setPassword(passwordEncoder.encode("123"));
         person.addAccount(account1);
+        person.addAccount(account2);
         person.setRole(Role.USER);
         personService.addPerson(person);
 
-        Atm atm = new Atm();
-        atmService.addAtm(atm);
+        Atm atm1 = new Atm();
+        atmService.add(atm1);
         Map<Cash, Long> cash = new HashMap<>();
         cash.put(Cash.NOTE100, 10L);
         cash.put(Cash.NOTE200, 10L);
         cash.put(Cash.NOTE500, 10L);
         AtmRequestDto atmRequestDto = new AtmRequestDto();
         atmRequestDto.setId(1L);
-        atmService.putCashToAtm(atmRequestDto, cash);
+        atmService.putCash(atmRequestDto, cash);
+
+        Atm atm2 = new Atm();
+        atmService.add(atm2);
+        Map<Cash, Long> cash2 = new HashMap<>();
+        cash2.put(Cash.NOTE100, 123L);
+        cash2.put(Cash.NOTE200, 123L);
+        cash2.put(Cash.NOTE500, 123L);
+        AtmRequestDto atmRequestDto2 = new AtmRequestDto();
+        atmRequestDto2.setId(2L);
+        atmService.putCash(atmRequestDto2, cash2);
     }
 }
