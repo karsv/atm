@@ -42,6 +42,11 @@ public class InitController {
         account1.setCardNumber(cardNumberGenerator.randomCardGenerate());
         accountService.addAccount(account1);
 
+        Account account2 = new Account();
+        account2.setMoneySum(BigDecimal.valueOf(1));
+        account2.setCardNumber(cardNumberGenerator.randomCardGenerate());
+        accountService.addAccount(account2);
+
         Person admin = new Person();
         admin.setName("admin");
         admin.setPassword(passwordEncoder.encode("123"));
@@ -52,6 +57,7 @@ public class InitController {
         person.setName("user");
         person.setPassword(passwordEncoder.encode("123"));
         person.addAccount(account1);
+        person.addAccount(account2);
         person.setRole(Role.USER);
         personService.addPerson(person);
 
