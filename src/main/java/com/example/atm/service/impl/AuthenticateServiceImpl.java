@@ -35,6 +35,7 @@ public class AuthenticateServiceImpl implements AuthenticateService {
             PersonResponseDto personResponseDto = new PersonResponseDto();
             personResponseDto.setName(name);
             personResponseDto.setPassword(password);
+            personResponseDto.setId(person.getId());
             personResponseDto.setRole(person.getRole().toString());
             return Optional.of(personResponseDto);
         }
