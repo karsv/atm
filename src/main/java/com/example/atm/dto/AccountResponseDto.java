@@ -5,6 +5,7 @@ import lombok.Data;
 
 @Data
 public class AccountResponseDto {
+    Long id;
     String cardNumber;
     BigDecimal money;
 }

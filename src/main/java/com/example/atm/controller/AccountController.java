@@ -27,6 +27,7 @@ public class AccountController {
     public AccountResponseDto getAccountStatus(@RequestBody AccountRequestDto accountRequestDto) {
         Account account = accountService.getAccount(accountRequestDto);
         AccountResponseDto accountResponseDto = new AccountResponseDto();
+        accountResponseDto.setId(account.getId());
         accountResponseDto.setCardNumber(account.getCardNumber());
         accountResponseDto.setMoney(account.getMoneySum());
         return accountResponseDto;
@@ -42,6 +43,7 @@ public class AccountController {
 
     private AccountResponseDto convertAccountToReaponseDto(Account account) {
         AccountResponseDto accountResponseDto = new AccountResponseDto();
+        accountResponseDto.setId(account.getId());
         accountResponseDto.setCardNumber(account.getCardNumber());
         accountResponseDto.setMoney(account.getMoneySum());
         return accountResponseDto;

@@ -39,8 +39,7 @@ public class AuthenticateServiceImpl implements AuthenticateService {
         Account account = new Account();
         account.setMoneySum(BigDecimal.valueOf(0));
         account.setCardNumber(cardNumberGenerator.randomCardGenerate());
-        accountService.addAccount(account);
-        person.addAccount(account);
+        person.addAccount(accountService.addAccount(account));
         return personService.addPerson(person);
     }
 
